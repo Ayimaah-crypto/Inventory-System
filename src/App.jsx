@@ -17,7 +17,7 @@ import Settings from "./Pages/Settings";
 import Deliveries from "./Pages/Deliveries";
 import Reports from "./Pages/Reports";
 import Expenses from "./Pages/Expenses";
-import Workspace from "./Pages/WorkSpace";
+import Workspace from "./Pages/Workspace";
 
 export default function App() {
   const [user, setUser] = useState(null);
