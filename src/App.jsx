@@ -46,26 +46,48 @@ export default function App() {
 
   // Main Dashboard Layout once signed in
   return (
-    <div className="flex min-h-screen bg-zinc-50">
+    <div className="min-h-screen bg-zinc-100 flex flex-col lg:flex-row">
       <Sidebar />
+      {/* lg:ml-64 pushes the main page content over by 16rem (256px) so it sits next to the fixed sidebar */}
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="p-6 flex-1 overflow-y-auto">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/add-product" element={<AddProducts />} />
-            <Route path="/job-cards" element={<JobCards />} />
-            <Route path="/invoices" element={<Invoices />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/deliveries" element={<Deliveries />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/expenses" element={<Expenses />} />
-            <Route path="/workspaces" element={<Workspace />} />
-          </Routes>
-        </main>
+        <main className="flex-1 lg:ml-64 p-4 sm:p-8">
+        <Routes>
+    //         <Route path="/" element={<Dashboard />} />
+    //         <Route path="/products" element={<Products />} />
+    //         <Route path="/add-product" element={<AddProducts />} />
+    //         <Route path="/job-cards" element={<JobCards />} />
+    //         <Route path="/invoices" element={<Invoices />} />
+    //         <Route path="/settings" element={<Settings />} />
+    //         <Route path="/deliveries" element={<Deliveries />} />
+    //         <Route path="*" element={<Navigate to="/" replace />} />
+    //         <Route path="/reports" element={<Reports />} />
+    //         <Route path="/expenses" element={<Expenses />} />
+    //         <Route path="/workspaces" element={<Workspace />} />
+    //       </Routes>
+      </main>
       </div>
     </div>
+    // <div className="flex min-h-screen bg-zinc-50">
+    //   <Sidebar />
+    //   <div className="flex-1 flex flex-col">
+    //     <Header />
+    //     <main className="p-6 flex-1 overflow-y-auto">
+    //       <Routes>
+    //         <Route path="/" element={<Dashboard />} />
+    //         <Route path="/products" element={<Products />} />
+    //         <Route path="/add-product" element={<AddProducts />} />
+    //         <Route path="/job-cards" element={<JobCards />} />
+    //         <Route path="/invoices" element={<Invoices />} />
+    //         <Route path="/settings" element={<Settings />} />
+    //         <Route path="/deliveries" element={<Deliveries />} />
+    //         <Route path="*" element={<Navigate to="/" replace />} />
+    //         <Route path="/reports" element={<Reports />} />
+    //         <Route path="/expenses" element={<Expenses />} />
+    //         <Route path="/workspaces" element={<Workspace />} />
+    //       </Routes>
+    //     </main>
+    //   </div>
+    // </div>
   );
 }

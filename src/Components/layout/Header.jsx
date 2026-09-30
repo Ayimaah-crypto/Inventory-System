@@ -15,17 +15,16 @@ import {
   FiAlertCircle
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { useNotifications } from "../../Hooks/useNotifications"; // Adjust path if needed
+import { useNotifications } from "../../Hooks/useNotifications";
 
 // IMPORT STANDARD CALCULATOR COMPONENT
 import StandardCalculator from "../StandardCalculator";
- // Adjust path if located elsewhere (e.g. "../../Components/StandardCalculator")
 
 export default function Header({ user }) {
   const [showCalculator, setShowCalculator] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [showNotificationMenu, setShowNotificationMenu] = useState(false); // <--- Add this
+  const [showNotificationMenu, setShowNotificationMenu] = useState(false);
 
   // Fetch real-time counts from Firestore hook
   const {
@@ -33,7 +32,7 @@ export default function Header({ user }) {
     unpaidInvoicesCount,
     outOfStockCount,
     totalAlertsCount,
-  } = useNotifications(); // <--- Add this
+  } = useNotifications();
 
   // Camera State
   const videoRef = useRef(null);
@@ -106,116 +105,120 @@ export default function Header({ user }) {
 
   return (
     <>
-      <header className="bg-white border-b border-zinc-200 px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+      <header className="bg-white border-b border-zinc-200 px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
         {/* Search or Greeting */}
         <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold text-zinc-400">
+          <span className="text-xs font-semibold text-zinc-400 truncate max-w-[150px] sm:max-w-none">
             Welcome back, <strong className="text-black">{user?.displayName || "Theodora"}</strong>
           </span>
         </div>
 
         {/* Quick Action Tools */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
 
-            <div className="relative">
-      <button
-        onClick={() => {
-          setShowNotificationMenu(!showNotificationMenu);
-          setShowProfileMenu(false); // Close profile if open
-        }}
-        className="relative p-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-black transition flex items-center justify-center"
-        title="Notifications"
-      >
-        <FiBell size={18} className="text-zinc-700" />
-        {totalAlertsCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white animate-pulse">
-            {totalAlertsCount}
-          </span>
-        )}
-      </button>
+          {/* Notifications Dropdown Container */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowNotificationMenu(!showNotificationMenu);
+                setShowProfileMenu(false); // Close profile if open
+              }}
+              className="relative p-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-black transition flex items-center justify-center"
+              title="Notifications"
+            >
+              <FiBell size={18} className="text-zinc-700" />
+              {totalAlertsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-white animate-pulse">
+                  {totalAlertsCount}
+                </span>
+              )}
+            </button>
 
-      {/* Dropdown Menu */}
-      {showNotificationMenu && (
-        <div className="absolute right-0 mt-2 w-80 bg-white border border-zinc-200 rounded-2xl shadow-xl p-4 z-50 text-xs">
-          <div className="flex justify-between items-center border-b border-zinc-100 pb-2 mb-3">
-            <h4 className="font-extrabold uppercase text-black">Alerts & Reminders</h4>
-            <span className="text-[10px] bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full">
-              {totalAlertsCount} Pending
-            </span>
+            {/* Dropdown Menu */}
+            {showNotificationMenu && (
+              <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white border border-zinc-200 rounded-2xl shadow-xl p-4 z-50 text-xs">
+                <div className="flex justify-between items-center border-b border-zinc-100 pb-2 mb-3">
+                  <h4 className="font-extrabold uppercase text-black">Alerts & Reminders</h4>
+                  <span className="text-[10px] bg-orange-100 text-orange-700 font-bold px-2 py-0.5 rounded-full">
+                    {totalAlertsCount} Pending
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {todayRemindersCount > 0 && (
+                    <Link
+                      to="/workspace"
+                      onClick={() => setShowNotificationMenu(false)}
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100 transition"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FiCalendar size={15} className="text-amber-600 shrink-0" />
+                        <span>{todayRemindersCount} reminder(s) for today</span>
+                      </div>
+                    </Link>
+                  )}
+
+                  {unpaidInvoicesCount > 0 && (
+                    <Link
+                      to="/invoices"
+                      onClick={() => setShowNotificationMenu(false)}
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-red-50 text-red-900 border border-red-200 hover:bg-red-100 transition"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FiFileText size={15} className="text-red-600 shrink-0" />
+                        <span>{unpaidInvoicesCount} unpaid invoice(s)</span>
+                      </div>
+                    </Link>
+                  )}
+
+                  {outOfStockCount > 0 && (
+                    <Link
+                      to="/inventory"
+                      onClick={() => setShowNotificationMenu(false)}
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-100 text-zinc-900 border border-zinc-200 hover:bg-zinc-200 transition"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FiAlertCircle size={15} className="text-zinc-600 shrink-0" />
+                        <span>{outOfStockCount} low stock item(s)</span>
+                      </div>
+                    </Link>
+                  )}
+
+                  {totalAlertsCount === 0 && (
+                    <p className="text-zinc-400 py-3 text-center">No active reminders or alerts!</p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
-
-          <div className="space-y-2">
-            {todayRemindersCount > 0 && (
-              <Link
-                to="/workspace"
-                onClick={() => setShowNotificationMenu(false)}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100 transition"
-              >
-                <div className="flex items-center gap-2">
-                  <FiCalendar size={15} className="text-amber-600" />
-                  <span>{todayRemindersCount} reminder(s) for today</span>
-                </div>
-              </Link>
-            )}
-
-            {unpaidInvoicesCount > 0 && (
-              <Link
-                to="/invoices"
-                onClick={() => setShowNotificationMenu(false)}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-red-50 text-red-900 border border-red-200 hover:bg-red-100 transition"
-              >
-                <div className="flex items-center gap-2">
-                  <FiFileText size={15} className="text-red-600" />
-                  <span>{unpaidInvoicesCount} unpaid invoice(s)</span>
-                </div>
-              </Link>
-            )}
-
-            {outOfStockCount > 0 && (
-              <Link
-                to="/inventory"
-                onClick={() => setShowNotificationMenu(false)}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-100 text-zinc-900 border border-zinc-200 hover:bg-zinc-200 transition"
-              >
-                <div className="flex items-center gap-2">
-                  <FiAlertCircle size={15} className="text-zinc-600" />
-                  <span>{outOfStockCount} low stock item(s)</span>
-                </div>
-              </Link>
-            )}
-
-            {totalAlertsCount === 0 && (
-              <p className="text-zinc-400 py-3 text-center">No active reminders or alerts!</p>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
           
           {/* Camera Button */}
           <button
             onClick={startCamera}
-            className="flex items-center gap-1.5 bg-zinc-100 hover:bg-zinc-200 text-black px-3.5 py-2 rounded-xl text-xs font-bold transition"
+            className="flex items-center gap-1.5 bg-zinc-100 hover:bg-zinc-200 text-black px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition"
             title="Take photo of apparel"
           >
-            <FiCamera size={16} className="text-orange-500" />
+            <FiCamera size={16} className="text-orange-500 shrink-0" />
             <span className="hidden sm:inline">Camera</span>
           </button>
 
           {/* Calculator Button */}
           <button
             onClick={() => setShowCalculator(true)}
-            className="flex items-center gap-1.5 bg-zinc-100 hover:bg-zinc-200 text-black px-3.5 py-2 rounded-xl text-xs font-bold transition"
+            className="flex items-center gap-1.5 bg-zinc-100 hover:bg-zinc-200 text-black px-2.5 sm:px-3.5 py-2 rounded-xl text-xs font-bold transition"
             title="Open pricing calculator"
           >
-            <FaCalculator size={16} className="text-orange-500" />
+            <FaCalculator size={16} className="text-orange-500 shrink-0" />
             <span className="hidden sm:inline">Calculator</span>
           </button>
 
           {/* User Profile Avatar Menu */}
           <div className="relative">
             <button
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              onClick={() => {
+                setShowProfileMenu(!showProfileMenu);
+                setShowNotificationMenu(false); // Close notifications if open
+              }}
               className="w-9 h-9 rounded-xl bg-orange-500 text-white font-extrabold text-sm flex items-center justify-center hover:opacity-90 transition shadow-xs"
             >
               {user?.email ? user.email.charAt(0).toUpperCase() : "A"}
