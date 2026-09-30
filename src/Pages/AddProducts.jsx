@@ -17,7 +17,7 @@ export default function AddProducts() {
     { color: "", size: "", stock: "" },
   ]);
 
-  // Handle Image Selection and Convert to Base64 (Bypasses Firebase Storage)
+  // Handle Image Selection and Convert to Base64
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -50,12 +50,18 @@ export default function AddProducts() {
     0
   );
 
+  // Helper numeric conversions
+  const parsedCostPrice = Number(costPrice) || 0;
+  const parsedSellingPrice = Number(sellingPrice) || 0;
+  const estimatedProfit = parsedSellingPrice - parsedCostPrice;
+
   // Save Product to Firestore
   const handleSaveProduct = async (e) => {
     e.preventDefault();
 
-    if (!productName || !sellingPrice || !costPrice) {
-      alert("Please fill in required fields (Product Name, Cost, and Selling Price).");
+    // ONLY require Product Name now
+    if (!productName.trim()) {
+      alert("Please fill in the Product Name.");
       return;
     }
 
@@ -67,9 +73,9 @@ export default function AddProducts() {
         sku,
         brand,
         category,
-        costPrice: Number(costPrice),
-        sellingPrice: Number(sellingPrice),
-        estimatedProfit: Number(sellingPrice) - Number(costPrice),
+        costPrice: parsedCostPrice,
+        sellingPrice: parsedSellingPrice,
+        estimatedProfit,
         totalStock,
         variations: variations.map((v) => ({
           ...v,
@@ -212,11 +218,10 @@ export default function AddProducts() {
 
             <div>
               <label className="block mb-2 text-gray-700 font-medium">
-                Cost Price (GH₵) *
+                Cost Price (GH₵) <span className="text-xs text-gray-400 font-normal">(Optional)</span>
               </label>
               <input
                 type="number"
-                required
                 value={costPrice}
                 onChange={(e) => setCostPrice(e.target.value)}
                 placeholder="50"
@@ -226,11 +231,10 @@ export default function AddProducts() {
 
             <div>
               <label className="block mb-2 text-gray-700 font-medium">
-                Selling Price (GH₵) *
+                Selling Price (GH₵) <span className="text-xs text-gray-400 font-normal">(Optional)</span>
               </label>
               <input
                 type="number"
-                required
                 value={sellingPrice}
                 onChange={(e) => setSellingPrice(e.target.value)}
                 placeholder="120"
@@ -245,7 +249,7 @@ export default function AddProducts() {
           <div>
             <p className="text-gray-400 text-sm">Estimated Profit Per Item</p>
             <h2 className="text-4xl font-bold text-orange-400 mt-1">
-              GH₵ {Number(sellingPrice || 0) - Number(costPrice || 0)}
+              GH₵ {estimatedProfit}
             </h2>
           </div>
           <div className="text-right">
