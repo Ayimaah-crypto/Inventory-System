@@ -1,6 +1,9 @@
-import { useState, useRef } from "react";
+
+
+
+import { useState, useRef, useEffect } from "react";
 import { auth } from "../../Firebase/firebase";
-import { signOut } from "firebase/auth";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 import { FaCalculator } from "react-icons/fa";
 import { 
   FiCamera, 
@@ -20,7 +23,22 @@ import { useNotifications } from "../../Hooks/useNotifications";
 // IMPORT STANDARD CALCULATOR COMPONENT
 import StandardCalculator from "../StandardCalculator";
 
-export default function Header({ user }) {
+export default function Header({ user: initialUser }) {
+  // Sync local active user with Firebase Auth directly
+  const [activeUser, setActiveUser] = useState(initialUser || auth.currentUser);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setActiveUser(firebaseUser);
+      } else {
+        setActiveUser(initialUser);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [initialUser]);
+
   const [showCalculator, setShowCalculator] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -106,10 +124,10 @@ export default function Header({ user }) {
   return (
     <>
       <header className="bg-white border-b border-zinc-200 px-4 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-        {/* Search or Greeting */}
+        {/* Dynamic Greeting */}
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold text-zinc-400 truncate max-w-[150px] sm:max-w-none">
-            Welcome back, <strong className="text-black">{user?.displayName || "Theodora"}</strong>
+            Welcome back, <strong className="text-black">{activeUser?.displayName || activeUser?.email?.split('@')[0] || "User"}</strong>
           </span>
         </div>
 
@@ -212,33 +230,44 @@ export default function Header({ user }) {
             <span className="hidden sm:inline">Calculator</span>
           </button>
 
-          {/* User Profile Avatar Menu */}
-          <div className="relative">
-            <button
-              onClick={() => {
-                setShowProfileMenu(!showProfileMenu);
-                setShowNotificationMenu(false); // Close notifications if open
-              }}
-              className="w-9 h-9 rounded-xl bg-orange-500 text-white font-extrabold text-sm flex items-center justify-center hover:opacity-90 transition shadow-xs"
-            >
-              {user?.email ? user.email.charAt(0).toUpperCase() : "A"}
-            </button>
+          {/* Dynamic User Profile Avatar Menu */}
+          {/* Dynamic User Profile Avatar Menu */}
+<div className="relative">
+  <button
+    onClick={() => {
+      setShowProfileMenu(!showProfileMenu);
+      setShowNotificationMenu(false); // Close notifications if open
+    }}
+    className="w-9 h-9 rounded-full bg-zinc-200 text-zinc-600 hover:bg-zinc-300 flex items-center justify-center transition shadow-xs overflow-hidden border border-zinc-300"
+    title="User Profile"
+  >
+    {activeUser?.photoURL ? (
+      <img 
+        src={activeUser.photoURL} 
+        alt={activeUser?.displayName || "Profile"} 
+        className="w-full h-full object-cover" 
+      />
+    ) : (
+      /* Default person icon silhouette */
+      <FiUser size={18} className="text-zinc-600" />
+    )}
+  </button>
 
-            {/* Profile Dropdown */}
-            {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-zinc-200 rounded-2xl shadow-xl py-2 z-50 text-xs">
-                <div className="px-4 py-2 border-b border-zinc-100">
-                  <p className="font-bold text-black truncate">{user?.displayName || "Store Owner"}</p>
-                  <p className="text-zinc-400 text-[10px] truncate">{user?.email}</p>
-                </div>
+  {/* Profile Dropdown */}
+  {showProfileMenu && (
+    <div className="absolute right-0 mt-2 w-48 bg-white border border-zinc-200 rounded-2xl shadow-xl py-2 z-50 text-xs">
+      <div className="px-4 py-2 border-b border-zinc-100">
+        <p className="font-bold text-black truncate">{activeUser?.displayName || "User"}</p>
+        <p className="text-zinc-400 text-[10px] truncate">{activeUser?.email || "No email provided"}</p>
+      </div>
 
-                <button
-                  onClick={handleLogout}
-                  className="w-full text-left px-4 py-2.5 text-red-600 font-semibold hover:bg-red-50 flex items-center gap-2 transition"
-                >
-                  <FiLogOut size={14} /> Sign Out
-                </button>
-              </div>
+      <button
+        onClick={handleLogout}
+        className="w-full text-left px-4 py-2.5 text-red-600 font-semibold hover:bg-red-50 flex items-center gap-2 transition"
+      >
+        <FiLogOut size={14} /> Sign Out
+      </button>
+    </div>
             )}
           </div>
 

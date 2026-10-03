@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { 
   signInWithEmailAndPassword, 
@@ -8,11 +9,18 @@ import {
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../Firebase/firebase";
 import { FcGoogle } from "react-icons/fc";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  
+  // Toggle states for password visibility
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -35,6 +43,13 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    // Validate matching passwords during sign-up
+    if (isSignUp && password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -127,17 +142,53 @@ export default function Login() {
             />
           </div>
 
+          {/* Main Password Input */}
           <div>
             <label className="block text-xs font-bold text-zinc-700 mb-1">Password</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-4 py-3 rounded-2xl bg-zinc-50 border border-zinc-200 focus:outline-none focus:border-orange-500 text-sm"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 pr-11 rounded-2xl bg-zinc-50 border border-zinc-200 focus:outline-none focus:border-orange-500 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1 focus:outline-none"
+                tabIndex={-1}
+              >
+                {/* {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />} */}
+              </button>
+            </div>
           </div>
+
+          {/* Confirm Password Input (Only visible during Sign Up) */}
+          {isSignUp && (
+            <div>
+              <label className="block text-xs font-bold text-zinc-700 mb-1">Confirm Password</label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 pr-11 rounded-2xl bg-zinc-50 border border-zinc-200 focus:outline-none focus:border-orange-500 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1 focus:outline-none"
+                  tabIndex={-1}
+                >
+                  {/* {showConfirmPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />} */}
+                </button>
+              </div>
+            </div>
+          )}
 
           <button
             type="submit"
@@ -155,6 +206,8 @@ export default function Login() {
             onClick={() => {
               setIsSignUp(!isSignUp);
               setError("");
+              setPassword("");
+              setConfirmPassword("");
             }}
             className="text-xs font-semibold text-zinc-500 hover:text-black transition"
           >

@@ -3,12 +3,12 @@
   "name": "Store Management App",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "log.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "icon-512.png",
+      "src": "log.png",
       "type": "image/png",
       "sizes": "512x512"
     }
